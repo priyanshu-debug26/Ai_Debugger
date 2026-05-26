@@ -3,6 +3,7 @@ import Header from './Header';
 import LeftPanel from './LeftPanel';
 import RightPanel from './RightPanel';
 import { processAIRequest } from '../utils/api';
+import { auth } from '../utils/firebase';
 
 export default function DebuggerApp() {
     const [sourceCode, setSourceCode] = useState('');
@@ -62,12 +63,14 @@ export default function DebuggerApp() {
         }
     };
 
+    const userName = auth.currentUser?.displayName || 'Developer';
+
     return (
         <>
             <Header />
             <div className="main-container">
                 <LeftPanel sourceCode={sourceCode} setSourceCode={setSourceCode} onAnalyze={handleAnalyze} />
-                <RightPanel messages={messages} loading={loading} onSendMessage={handleSendMessage} />
+                <RightPanel messages={messages} loading={loading} onSendMessage={handleSendMessage} userName={userName} />
             </div>
         </>
     );

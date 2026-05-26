@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { parseMarkdown } from '../utils/markdownParser';
 
-export default function RightPanel({ messages, loading, onSendMessage }) {
+export default function RightPanel({ messages, loading, onSendMessage, userName = 'Developer' }) {
     const [inputValue, setInputValue] = useState('');
     const chatContainerRef = useRef(null);
 
@@ -35,7 +35,7 @@ export default function RightPanel({ messages, loading, onSendMessage }) {
                         </svg>
                         AI Debugger
                     </div>
-                    <p>Hello! I'm ready to help you debug your code. Paste your source code or error logs in the left
+                    <p>Hello {userName}! I'm ready to help you debug your code. Paste your source code or error logs in the left
                         panel, and click <strong>Analyze</strong> to get started.</p>
                 </div>
 

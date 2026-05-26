@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { 
     signInWithEmailAndPassword, 
     createUserWithEmailAndPassword, 
-    signInWithPopup 
+    signInWithPopup,
+    updateProfile
 } from 'firebase/auth';
 import { auth, provider } from '../utils/firebase';
 
 export default function AuthPage() {
     const [isLogin, setIsLogin] = useState(true);
+    const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -25,7 +27,12 @@ export default function AuthPage() {
             if (isLogin) {
                 await signInWithEmailAndPassword(auth, email, password);
             } else {
-                await createUserWithEmailAndPassword(auth, email, password);
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                if (name.trim()) {
+                    await updateProfile(userCredential.user, {
+                        displayName: name.trim()
+                    });
+                }
             }
             navigate('/app');
         } catch (err) {
@@ -63,6 +70,18 @@ export default function AuthPage() {
                     {error && <div className="auth-error">{error}</div>}
 
                     <form className="auth-form" onSubmit={handleEmailAuth}>
+                        {!isLogin && (
+                            <div className="input-group">
+                                <label>Full Name</label>
+                                <input 
+                                    type="text" 
+                                    placeholder="John Doe" 
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    required={!isLogin} 
+                                />
+                            </div>
+                        )}
                         <div className="input-group">
                             <label>Email Address</label>
                             <input 
