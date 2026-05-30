@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from './Header';
 import LeftPanel from './LeftPanel';
 import RightPanel from './RightPanel';
@@ -9,6 +9,32 @@ export default function DebuggerApp() {
     const [sourceCode, setSourceCode] = useState('');
     const [messages, setMessages] = useState([]); // format: { role: 'user'|'model', parts: [{text}], uiText: '...' }
     const [loading, setLoading] = useState(false);
+    const [historyLoaded, setHistoryLoaded] = useState(false);
+
+    useEffect(() => {
+        if (auth.currentUser) {
+            const saved = localStorage.getItem(`ai_debugger_messages_${auth.currentUser.uid}`);
+            if (saved) {
+                try {
+                    setMessages(JSON.parse(saved));
+                } catch(e) {}
+            }
+            setHistoryLoaded(true);
+        }
+    }, [auth.currentUser]);
+
+    useEffect(() => {
+        if (historyLoaded && auth.currentUser) {
+            localStorage.setItem(`ai_debugger_messages_${auth.currentUser.uid}`, JSON.stringify(messages));
+        }
+    }, [messages, historyLoaded, auth.currentUser]);
+
+    const handleClearHistory = () => {
+        setMessages([]);
+        if (auth.currentUser) {
+            localStorage.removeItem(`ai_debugger_messages_${auth.currentUser.uid}`);
+        }
+    };
 
     const handleAnalyze = async () => {
         const code = sourceCode.trim();
@@ -70,7 +96,7 @@ export default function DebuggerApp() {
             <Header />
             <div className="main-container">
                 <LeftPanel sourceCode={sourceCode} setSourceCode={setSourceCode} onAnalyze={handleAnalyze} />
-                <RightPanel messages={messages} loading={loading} onSendMessage={handleSendMessage} userName={userName} />
+                <RightPanel messages={messages} loading={loading} onSendMessage={handleSendMessage} userName={userName} onClearHistory={handleClearHistory} />
             </div>
         </>
     );

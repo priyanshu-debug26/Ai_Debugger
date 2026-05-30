@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { parseMarkdown } from '../utils/markdownParser';
 
-export default function RightPanel({ messages, loading, onSendMessage, userName = 'Developer' }) {
+export default function RightPanel({ messages, loading, onSendMessage, userName = 'Developer', onClearHistory }) {
     const [inputValue, setInputValue] = useState('');
     const chatContainerRef = useRef(null);
 
@@ -25,7 +25,19 @@ export default function RightPanel({ messages, loading, onSendMessage, userName 
 
     return (
         <div className="right-panel">
-            <h1>Debug Chat</h1>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                <h1 style={{ margin: 0 }}>Debug Chat</h1>
+                {messages.length > 0 && (
+                    <button 
+                        onClick={onClearHistory} 
+                        style={{ padding: '6px 12px', backgroundColor: 'transparent', color: '#888', border: '1px solid #444', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem', transition: 'all 0.2s ease' }}
+                        onMouseEnter={(e) => { e.target.style.color = '#fff'; e.target.style.borderColor = '#888'; }}
+                        onMouseLeave={(e) => { e.target.style.color = '#888'; e.target.style.borderColor = '#444'; }}
+                    >
+                        Clear History
+                    </button>
+                )}
+            </div>
 
             <div className="chat-container" id="chat-container" ref={chatContainerRef}>
                 <div className="message ai">
